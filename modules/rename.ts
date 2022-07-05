@@ -4,7 +4,7 @@ import inputSanitization from "../sidekick/input-sanitization";
 import Strings from "../lib/db";
 import Client from "../sidekick/client";
 import { downloadContentFromMessage, MediaType, proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 import { JSDOM } from "jsdom";
 import { Transform } from "stream";
@@ -16,7 +16,7 @@ module.exports = {
     description: rename.DESCRIPTION,
     extendedDescription: rename.EXTENDED_DESCRIPTION,
     demo: { isEnabled: false },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         // Task starts here
         try {
             var startTime = window.performance.now();
@@ -35,7 +35,7 @@ module.exports = {
                     );
                     var downloading = await client
                         .sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             rename.DOWNLOADING,
                             MessageType.text
                         );
@@ -47,48 +47,48 @@ module.exports = {
                     const time = ((endTime - startTime) / 1000).toFixed(2);
                     await client
                         .sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             fs.readFileSync(fileName),
                             MessageType.document,
                             {
                                 mimetype: mimetype,
                                 filename: updatedName,
-                                caption: `BotsApp changed file name from ${title} to ${updatedName} in ${time} second(s).`,
+                                caption: `XA changed file name from ${title} to ${updatedName} in ${time} second(s).`,
                             }
                         )
                         .catch((err) =>
-                            inputSanitization.handleError(err, client, BotsApp)
+                            inputSanitization.handleError(err, client, XA)
                         );
                     inputSanitization.deleteFiles(fileName);
                     return client
-                        .deleteMessage(BotsApp.chatId, {
+                        .deleteMessage(XA.chatId, {
                             id: downloading.key.id,
-                            remoteJid: BotsApp.chatId,
+                            remoteJid: XA.chatId,
                             fromMe: true,
                         })
                         .catch((err) =>
-                            inputSanitization.handleError(err, client, BotsApp)
+                            inputSanitization.handleError(err, client, XA)
                         );
                     }catch(err){
                         await client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             rename.VALID_REPLY,
                             MessageType.text
                         );
                         return;
                     }
                 };
-            if (BotsApp.isTextReply) {
+            if (XA.isTextReply) {
                 if (args.length < 1) {
                     await client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         rename.PROVIDE_NEW_NAME,
                         MessageType.text
                     );
                     return;
                 }else if(chat.message.extendedTextMessage.contextInfo.quotedMessage.conversation){
                     await client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         rename.VALID_REPLY,
                         MessageType.text
                     );
@@ -105,7 +105,7 @@ module.exports = {
                 changeName(replyChat, mediaType, mimetype, title);
             } else {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     rename.REPLY_TO_DOCUMENT,
                     MessageType.text
                 );
@@ -115,7 +115,7 @@ module.exports = {
             await inputSanitization.handleError(
                 err,
                 client,
-                BotsApp,
+                XA,
                 rename.ERROR
             );
         }

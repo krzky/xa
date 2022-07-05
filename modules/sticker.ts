@@ -5,7 +5,7 @@ import { MessageType } from "../sidekick/message-type";
 import Strings from "../lib/db";
 import Client from "../sidekick/client";
 import { downloadContentFromMessage, proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { Transform } from "stream";
 
 const STICKER = Strings.sticker;
@@ -15,13 +15,13 @@ export = {
     description: STICKER.DESCRIPTION,
     extendedDescription: STICKER.EXTENDED_DESCRIPTION,
     demo: { isEnabled: false },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         // Task starts here
         try {
             // Function to convert media to sticker
             const convertToSticker = async (imageId: string, replyChat: { message: any; type: any; }): Promise<void> => {
                 var downloading: proto.WebMessageInfo = await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STICKER.DOWNLOADING,
                     MessageType.text
                 );
@@ -30,7 +30,7 @@ export = {
                 await inputSanitization.saveBuffer(fileName, stream);
                 const stickerPath: string = "./tmp/st-" + imageId + ".webp";
                 // If is an image
-                if (BotsApp.type === "image" || BotsApp.isReplyImage) {
+                if (XA.type === "image" || XA.isReplyImage) {
                     ffmpeg(fileName)
                         .outputOptions(["-y", "-vcodec libwebp"])
                         .videoFilters(
@@ -39,27 +39,27 @@ export = {
                         .save(stickerPath)
                         .on("end", async () => {
                             await client.sendMessage(
-                                BotsApp.chatId,
+                                XA.chatId,
                                 fs.readFileSync(stickerPath),
                                 MessageType.sticker
-                            ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                            ).catch(err => inputSanitization.handleError(err, client, XA));
                             inputSanitization.deleteFiles(
                                 fileName,
                                 stickerPath
                             );
-                            await client.deleteMessage(BotsApp.chatId, {
+                            await client.deleteMessage(XA.chatId, {
                                 id: downloading.key.id,
-                                remoteJid: BotsApp.chatId,
+                                remoteJid: XA.chatId,
                                 fromMe: true,
-                            }).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                            }).catch(err => inputSanitization.handleError(err, client, XA));
                         })
                         .on('error', async (err: any) => {
-                            inputSanitization.handleError(err, client, BotsApp)
-                            await client.deleteMessage(BotsApp.chatId, {
+                            inputSanitization.handleError(err, client, XA)
+                            await client.deleteMessage(XA.chatId, {
                                 id: downloading.key.id,
-                                remoteJid: BotsApp.chatId,
+                                remoteJid: XA.chatId,
                                 fromMe: true,
-                            }).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                            }).catch(err => inputSanitization.handleError(err, client, XA));
                         });
                     return;
                 }
@@ -83,63 +83,63 @@ export = {
                     .save(stickerPath)
                     .on("end", async (err: any) => {
                         await client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             fs.readFileSync(stickerPath),
                             MessageType.sticker
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
                         inputSanitization.deleteFiles(fileName, stickerPath);
-                        await client.deleteMessage(BotsApp.chatId, {
+                        await client.deleteMessage(XA.chatId, {
                             id: downloading.key.id,
-                            remoteJid: BotsApp.chatId,
+                            remoteJid: XA.chatId,
                             fromMe: true,
-                        }).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        }).catch(err => inputSanitization.handleError(err, client, XA));
                     })
                     .on('error', async (err: any) => {
-                        inputSanitization.handleError(err, client, BotsApp)
-                        await client.deleteMessage(BotsApp.chatId, {
+                        inputSanitization.handleError(err, client, XA)
+                        await client.deleteMessage(XA.chatId, {
                             id: downloading.key.id,
-                            remoteJid: BotsApp.chatId,
+                            remoteJid: XA.chatId,
                             fromMe: true,
-                        }).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        }).catch(err => inputSanitization.handleError(err, client, XA));
                     });
                 return;
             };
 
             // User sends media message along with command in caption
-            if (BotsApp.isImage || BotsApp.isGIF || BotsApp.isVideo) {
+            if (XA.isImage || XA.isGIF || XA.isVideo) {
                 var replyChatObject = {
-                    message: (BotsApp.type === 'image' ? chat.message.imageMessage : chat.message.videoMessage),
-                    type: BotsApp.type
+                    message: (XA.type === 'image' ? chat.message.imageMessage : chat.message.videoMessage),
+                    type: XA.type
                 };
                 var imageId: string = chat.key.id;
                 convertToSticker(imageId, replyChatObject);
             }
             // Replied to an image , gif or video
             else if (
-                BotsApp.isReplyImage ||
-                BotsApp.isReplyGIF ||
-                BotsApp.isReplyVideo
+                XA.isReplyImage ||
+                XA.isReplyGIF ||
+                XA.isReplyVideo
             ) {
                 var replyChatObject = {
-                    message: (BotsApp.isReplyImage ? chat.message.extendedTextMessage.contextInfo.quotedMessage.imageMessage : chat.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage),
-                    type: (BotsApp.isReplyImage ? 'image' : 'video')
+                    message: (XA.isReplyImage ? chat.message.extendedTextMessage.contextInfo.quotedMessage.imageMessage : chat.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage),
+                    type: (XA.isReplyImage ? 'image' : 'video')
                 };
                 var imageId: string =
                     chat.message.extendedTextMessage.contextInfo.stanzaId;
                 convertToSticker(imageId, replyChatObject);
             } else {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STICKER.TAG_A_VALID_MEDIA_MESSAGE,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
             }
             return;
         } catch (err) {
             await inputSanitization.handleError(
                 err,
                 client,
-                BotsApp,
+                XA,
                 STICKER.TAG_A_VALID_MEDIA_MESSAGE
             );
         }

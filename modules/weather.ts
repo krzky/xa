@@ -4,7 +4,7 @@ import config from "../config";
 import Strings from "../lib/db";
 import Client from "../sidekick/client";
 import { proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 import format from "string-format";
 const WEATHER = Strings.weather;
@@ -22,7 +22,7 @@ module.exports = {
             ".weather New Delhi tom",
         ],
     },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         try {
             const weatherTypes = {
                 sunny: "sunny",
@@ -39,33 +39,33 @@ module.exports = {
             };
             async function result(imageUrl, weatherDataVariables, downloading) {
                 await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     { url: imageUrl },
                     MessageType.image,
                     {
                         caption:
                             format(WEATHER.WEATHER_DATA, weatherDataVariables),
                     }
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
-                await client.deleteMessage(BotsApp.chatId, {
+                ).catch(err => inputSanitization.handleError(err, client, XA));
+                await client.deleteMessage(XA.chatId, {
                     id: downloading.key.id,
-                    remoteJid: BotsApp.chatId,
+                    remoteJid: XA.chatId,
                     fromMe: true,
                 });
             }
             if (args.length < 1) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     WEATHER.CITY_NAME_REQUIRED,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             } else if (
                 args[args.length - 1] === "tom" ||
                 args[args.length - 1] === "tomorrow"
             ) {
                 var downloading = await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     WEATHER.DOWNLOADING,
                     MessageType.text
                 );
@@ -196,20 +196,20 @@ module.exports = {
                             };
 
                             const imageUrl =
-                                "https://raw.githubusercontent.com/Prince-Mendiratta/BotsApp-Resources/main/weather/" +
+                                "https://raw.githubusercontent.com/Prince-Mendiratta/XA-Resources/main/weather/" +
                                 imageName +
                                 ".jpg";
                             result(imageUrl, weatherDataVariables, downloading);
                         } catch (err) {
-                            client.deleteMessage(BotsApp.chatId, {
+                            client.deleteMessage(XA.chatId, {
                                 id: downloading.key.id,
-                                remoteJid: BotsApp.chatId,
+                                remoteJid: XA.chatId,
                                 fromMe: true,
                             });
                             inputSanitization.handleError(
                                 err,
                                 client,
-                                BotsApp,
+                                XA,
                                 WEATHER.ERROR_OCCURED
                             );
 
@@ -220,7 +220,7 @@ module.exports = {
                 return;
             } else {
                 var downloading = await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     WEATHER.DOWNLOADING,
                     MessageType.text
                 );
@@ -341,21 +341,21 @@ module.exports = {
                                 dateAndTime: dateAndTime,
                             };
                             const imageUrl =
-                                "https://raw.githubusercontent.com/Prince-Mendiratta/BotsApp-Resources/main/weather/" +
+                                "https://raw.githubusercontent.com/Prince-Mendiratta/XA-Resources/main/weather/" +
                                 imageName +
                                 ".jpg";
 
                             result(imageUrl, weatherDataVariables, downloading);
                         } catch (err) {
-                            client.deleteMessage(BotsApp.chatId, {
+                            client.deleteMessage(XA.chatId, {
                                 id: downloading.key.id,
-                                remoteJid: BotsApp.chatId,
+                                remoteJid: XA.chatId,
                                 fromMe: true,
                             });
                             inputSanitization.handleError(
                                 err,
                                 client,
-                                BotsApp,
+                                XA,
                                 WEATHER.ERROR_OCCURED
                             );
                             return;
@@ -368,7 +368,7 @@ module.exports = {
             inputSanitization.handleError(
                 err,
                 client,
-                BotsApp,
+                XA,
                 WEATHER.ERROR_OCCURED
             );
         }

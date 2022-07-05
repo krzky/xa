@@ -4,7 +4,7 @@ import STRINGS from "../lib/db";
 import format from "string-format";
 import Client from "../sidekick/client";
 import { proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 
 module.exports = {
@@ -19,9 +19,9 @@ module.exports = {
             ".tr how are you | hi",
         ],
     },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         const processing = await client.sendMessage(
-            BotsApp.chatId,
+            XA.chatId,
             STRINGS.tr.PROCESSING,
             MessageType.text
         );
@@ -30,21 +30,21 @@ module.exports = {
             var language = "";
             if (args.length == 0) {
                 await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.tr.EXTENDED_DESCRIPTION,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
-                return await client.deleteMessage(BotsApp.chatId, {
+                ).catch(err => inputSanitization.handleError(err, client, XA));
+                return await client.deleteMessage(XA.chatId, {
                     id: processing.key.id,
-                    remoteJid: BotsApp.chatId,
+                    remoteJid: XA.chatId,
                     fromMe: true,
                 });
             }
-            if (!BotsApp.isTextReply) {
+            if (!XA.isTextReply) {
                 try {
-                    var body = BotsApp.body.split("|");
+                    var body = XA.body.split("|");
                     text = body[0].replace(
-                        BotsApp.body[0] + BotsApp.commandName + " ",
+                        XA.body[0] + XA.commandName + " ",
                         ""
                     );
                     var i = 0;
@@ -54,37 +54,37 @@ module.exports = {
                     language = body[1].split(" ")[i];
                 } catch (err) {
                     if (err instanceof TypeError) {
-                        text = BotsApp.body.replace(
-                            BotsApp.body[0] + BotsApp.commandName + " ",
+                        text = XA.body.replace(
+                            XA.body[0] + XA.commandName + " ",
                             ""
                         );
                         language = "English";
                     }
                 }
-            } else if (BotsApp.replyMessage) {
-                text = BotsApp.replyMessage;
+            } else if (XA.replyMessage) {
+                text = XA.replyMessage;
                 language = args[0];
             } else {
                 await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.tr.INVALID_REPLY,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
-                return await client.deleteMessage(BotsApp.chatId, {
+                ).catch(err => inputSanitization.handleError(err, client, XA));
+                return await client.deleteMessage(XA.chatId, {
                     id: processing.key.id,
-                    remoteJid: BotsApp.chatId,
+                    remoteJid: XA.chatId,
                     fromMe: true,
                 });
             }
             if (text.length > 4000) {
                 await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     format(STRINGS.tr.TOO_LONG, String(text.length)),
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
-                return await client.deleteMessage(BotsApp.chatId, {
+                ).catch(err => inputSanitization.handleError(err, client, XA));
+                return await client.deleteMessage(XA.chatId, {
                     id: processing.key.id,
-                    remoteJid: BotsApp.chatId,
+                    remoteJid: XA.chatId,
                     fromMe: true,
                 });
             }
@@ -93,7 +93,7 @@ module.exports = {
             })
                 .then((res) => {
                     client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         format(
                             STRINGS.tr.SUCCESS,
                             res.from.language.iso,
@@ -107,17 +107,17 @@ module.exports = {
                     inputSanitization.handleError(
                         err,
                         client,
-                        BotsApp,
+                        XA,
                         STRINGS.tr.LANGUAGE_NOT_SUPPORTED
                     );
                 });
-            return await client.deleteMessage(BotsApp.chatId, {
+            return await client.deleteMessage(XA.chatId, {
                 id: processing.key.id,
-                remoteJid: BotsApp.chatId,
+                remoteJid: XA.chatId,
                 fromMe: true,
             });
         } catch (err) {
-            inputSanitization.handleError(err, client, BotsApp);
+            inputSanitization.handleError(err, client, XA);
         }
     },
 };

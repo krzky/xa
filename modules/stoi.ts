@@ -4,7 +4,7 @@ import inputSanitization from "../sidekick/input-sanitization";
 import Strings from "../lib/db";
 import Client from "../sidekick/client";
 import { downloadContentFromMessage, proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 import { Transform } from "stream";
 const STOI = Strings.stoi;
@@ -14,13 +14,13 @@ module.exports = {
     description: STOI.DESCRIPTION,
     extendedDescription: STOI.EXTENDED_DESCRIPTION,
     demo: { isEnabled: false },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         // Task starts here
         try {
             // Function to convert media to sticker
             const convertToImage = async (stickerId: string, replyChat: { message: proto.IStickerMessage; type: any; }) => {
                 var downloading = await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STOI.DOWNLOADING,
                     MessageType.text
                 );
@@ -34,32 +34,32 @@ module.exports = {
                         .save(imagePath)
                         .on("error", function (err, stdout, stderr) {
                             inputSanitization.deleteFiles(fileName);
-                            client.deleteMessage(BotsApp.chatId, {
+                            client.deleteMessage(XA.chatId, {
                                 id: downloading.key.id,
-                                remoteJid: BotsApp.chatId,
+                                remoteJid: XA.chatId,
                                 fromMe: true,
                             });
                             throw err;
                         })
                         .on("end", async () => {
                             await client.sendMessage(
-                                BotsApp.chatId,
+                                XA.chatId,
                                 fs.readFileSync(imagePath),
                                 MessageType.image,
-                            ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                            ).catch(err => inputSanitization.handleError(err, client, XA));
                             inputSanitization.deleteFiles(fileName, imagePath);
-                            return await client.deleteMessage(BotsApp.chatId, {
+                            return await client.deleteMessage(XA.chatId, {
                                 id: downloading.key.id,
-                                remoteJid: BotsApp.chatId,
+                                remoteJid: XA.chatId,
                                 fromMe: true,
-                            }).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                            }).catch(err => inputSanitization.handleError(err, client, XA));
                         });
                 } catch (err) {
                     throw err;
                 }
             };
 
-            if (BotsApp.isReplySticker && !BotsApp.isReplyAnimatedSticker) {
+            if (XA.isReplySticker && !XA.isReplyAnimatedSticker) {
                 var replyChatObject = {
                     message:
                         chat.message.extendedTextMessage.contextInfo
@@ -69,26 +69,26 @@ module.exports = {
                 var stickerId =
                     chat.message.extendedTextMessage.contextInfo.stanzaId;
                 convertToImage(stickerId, replyChatObject);
-            } else if (BotsApp.isReplyAnimatedSticker) {
+            } else if (XA.isReplyAnimatedSticker) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STOI.TAG_A_VALID_STICKER_MESSAGE,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             } else {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STOI.TAG_A_VALID_STICKER_MESSAGE,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
             }
             return;
         } catch (err) {
             await inputSanitization.handleError(
                 err,
                 client,
-                BotsApp,
+                XA,
                 STOI.ERROR
             );
         }

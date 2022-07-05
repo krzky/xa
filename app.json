@@ -12,7 +12,7 @@
         "WhatsApp Multi Device bot"
     ],
     "repository": "https://github.com/XAOfficial/XA",
-    "website": "https://mybotsapp.com",
+    "website": "https://myxa.com",
     "success_url": "",
     "stack": "container",
     "env": {
@@ -71,7 +71,7 @@
         }
     ],
     "formation": {
-        "botsapp": {
+        "xa": {
             "quantity": 1,
             "size": "free"
         }

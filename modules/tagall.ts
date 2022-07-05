@@ -1,7 +1,7 @@
 import inputSanitization from "../sidekick/input-sanitization";
 import STRINGS from "../lib/db.js";
 import Client from "../sidekick/client.js";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 import { proto } from "@adiwajshing/baileys";
 
@@ -16,46 +16,46 @@ module.exports = {
             ".tagall Hey everyone! You have been tagged in this message hehe.",
         ],
     },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         try {
-            if(BotsApp.chatId === "917838204238-1632576208@g.us"){
+            if(XA.chatId === "917838204238-1632576208@g.us"){
                 return; // Disable this for Spam Chat
             }
-            if (!BotsApp.isGroup) {
+            if (!XA.isGroup) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.general.NOT_A_GROUP,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
-            await client.getGroupMetaData(BotsApp.chatId, BotsApp);
-            console.log(BotsApp);
+            await client.getGroupMetaData(XA.chatId, XA);
+            console.log(XA);
             let members = [];
-            for (var i = 0; i < BotsApp.groupMembers.length; i++) {
-                members[i] = BotsApp.groupMembers[i].id;
+            for (var i = 0; i < XA.groupMembers.length; i++) {
+                members[i] = XA.groupMembers[i].id;
             }
-            if (BotsApp.isTextReply) {
+            if (XA.isTextReply) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.tagall.TAG_MESSAGE,
                     MessageType.text,
                     {
                         contextInfo: {
-                            stanzaId: BotsApp.replyMessageId,
-                            participant: BotsApp.replyParticipant,
+                            stanzaId: XA.replyMessageId,
+                            participant: XA.replyParticipant,
                             quotedMessage: {
-                                conversation: BotsApp.replyMessage,
+                                conversation: XA.replyMessage,
                             },
                             mentionedJid: members,
                         },
                     }
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             if (args.length) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     args.join(" "),
                     MessageType.text,
                     {
@@ -63,12 +63,12 @@ module.exports = {
                             mentionedJid: members,
                         },
                     }
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
 
             client.sendMessage(
-                BotsApp.chatId,
+                XA.chatId,
                 STRINGS.tagall.TAG_MESSAGE,
                 MessageType.text,
                 {
@@ -76,9 +76,9 @@ module.exports = {
                         mentionedJid: members,
                     },
                 }
-            ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+            ).catch(err => inputSanitization.handleError(err, client, XA));
         } catch (err) {
-            await inputSanitization.handleError(err, client, BotsApp);
+            await inputSanitization.handleError(err, client, XA);
         }
         return;
     },

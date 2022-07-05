@@ -8,36 +8,36 @@ module.exports = {
     description: UNMUTE.DESCRIPTION,
     extendedDescription: UNMUTE.EXTENDED_DESCRIPTION,
     demo: { isEnabled: true, text: ".unmute" },
-    async handle(client, chat, BotsApp, args) {
+    async handle(client, chat, XA, args) {
         try {
-            if (!BotsApp.isGroup) {
+            if (!XA.isGroup) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     UNMUTE.NOT_GROUP_CHAT,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
-            if (!BotsApp.isBotGroupAdmin) {
+            if (!XA.isBotGroupAdmin) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     UNMUTE.NOT_ADMIN,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             client.groupSettingChange(
-                BotsApp.chatId,
+                XA.chatId,
                 GroupSettingChange.messageSend,
                 false
             );
             client.sendMessage(
-                BotsApp.chatId,
+                XA.chatId,
                 UNMUTE.CHAT_ALL_MEMBERS,
                 MessageType.text
-            ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+            ).catch(err => inputSanitization.handleError(err, client, XA));
         } catch (err) {
-            await inputSanitization.handleError(err, client, BotsApp);
+            await inputSanitization.handleError(err, client, XA);
         }
     },
 };

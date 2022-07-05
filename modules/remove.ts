@@ -3,7 +3,7 @@ import STRINGS from "../lib/db.js";
 import inputSanitization from "../sidekick/input-sanitization";
 import Client from "../sidekick/client";
 import { proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 
 module.exports = {
@@ -11,64 +11,64 @@ module.exports = {
     description: STRINGS.remove.DESCRIPTION,
     extendedDescription: STRINGS.remove.EXTENDED_DESCRIPTION,
     demo: { isEnabled: false },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         try {
-            if (!BotsApp.isGroup) {
+            if (!XA.isGroup) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.general.NOT_A_GROUP,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
-            await client.getGroupMetaData(BotsApp.chatId, BotsApp);
-            if (!BotsApp.isBotGroupAdmin) {
+            await client.getGroupMetaData(XA.chatId, XA);
+            if (!XA.isBotGroupAdmin) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.general.BOT_NOT_ADMIN,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             let owner: string;
-            for (const index in BotsApp.groupMembers) {
-                if (BotsApp.groupMembers[index].admin === 'superadmin') {
-                    owner = BotsApp.groupMembers[index].id.split("@")[0];
+            for (const index in XA.groupMembers) {
+                if (XA.groupMembers[index].admin === 'superadmin') {
+                    owner = XA.groupMembers[index].id.split("@")[0];
                 }
             }
-            if (BotsApp.isTextReply) {
+            if (XA.isTextReply) {
                 let PersonToRemove =
                     chat.message.extendedTextMessage.contextInfo.participant;
                 if (PersonToRemove === owner + "@s.whatsapp.net") {
                     client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         "*" + owner + " is the owner of the group*",
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                     return;
                 }
-                if (PersonToRemove === BotsApp.owner) {
+                if (PersonToRemove === XA.owner) {
                     client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         "```Why man, why?! Why would you use my powers to remove myself from the group?!🥺```\n*Request Rejected.* 😤",
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                     return;
                 }
                 var isMember = inputSanitization.isMember(
                     PersonToRemove,
-                    BotsApp.groupMembers
+                    XA.groupMembers
                 );
                 if (!isMember) {
                     client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         "*person is not in the group*",
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                 }
                 try {
                     if (PersonToRemove) {
-                        await client.sock.groupParticipantsUpdate(BotsApp.chatId, [PersonToRemove], 'remove').catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        await client.sock.groupParticipantsUpdate(XA.chatId, [PersonToRemove], 'remove').catch(err => inputSanitization.handleError(err, client, XA));
                         return;
                     }
                 } catch (err) {
@@ -78,51 +78,51 @@ module.exports = {
             }
             if (!args[0]) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.remove.INPUT_ERROR,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             if (args[0][0] == "@") {
                 const number = args[0].substring(1);
                 if (parseInt(args[0]) === NaN) {
                     client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         STRINGS.remove.INPUT_ERROR,
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                     return;
                 }
 
-                if((number + "@s.whatsapp.net") === BotsApp.owner){
+                if((number + "@s.whatsapp.net") === XA.owner){
                     client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         "```Why man, why?! Why would you use my powers to remove myself from the group?!🥺```\n*Request Rejected.* 😤",
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                     return;
                 }
 
                 if (!(number === owner)) {
-                    await client.sock.groupParticipantsUpdate(BotsApp.chatId, [number + "@s.whatsapp.net"], 'remove').catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    await client.sock.groupParticipantsUpdate(XA.chatId, [number + "@s.whatsapp.net"], 'remove').catch(err => inputSanitization.handleError(err, client, XA));
                     return;
                 } else {
                     client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         "*" + owner + " is the owner of the group*",
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                     return;
                 }
             }
             client.sendMessage(
-                BotsApp.chatId,
+                XA.chatId,
                 STRINGS.remove.INPUT_ERROR,
                 MessageType.text
-            ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+            ).catch(err => inputSanitization.handleError(err, client, XA));
         } catch (err) {
-            await inputSanitization.handleError(err, client, BotsApp);
+            await inputSanitization.handleError(err, client, XA);
             return;
         }
     },

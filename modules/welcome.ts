@@ -3,7 +3,7 @@ import inputSanitization from "../sidekick/input-sanitization";
 import Strings from "../lib/db";
 import Client from "../sidekick/client";
 import { proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 const WELCOME = Strings.welcome;
 
@@ -15,55 +15,55 @@ module.exports = {
         isEnabled: true,
         text: [".welcome", ".welcome off", ".welcome delete"],
     },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         try {
-            if (!BotsApp.isGroup) {
+            if (!XA.isGroup) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     WELCOME.NOT_A_GROUP,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
-            await client.getGroupMetaData(BotsApp.chatId, BotsApp);
-            var Msg: any = await Greetings.getMessage(BotsApp.chatId, "welcome");
+            await client.getGroupMetaData(XA.chatId, XA);
+            var Msg: any = await Greetings.getMessage(XA.chatId, "welcome");
             if (args.length == 0) {
                 var enabled = await Greetings.checkSettings(
-                    BotsApp.chatId,
+                    XA.chatId,
                     "welcome"
                 );
                 try {
                     if (enabled === false || enabled === undefined) {
                         client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             WELCOME.SET_WELCOME_FIRST,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
                         return;
                     } else if (enabled === "OFF") {
                         await client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             WELCOME.CURRENTLY_DISABLED,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
                         await client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             Msg.message,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
                         return;
                     }
 
                     await client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         WELCOME.CURRENTLY_ENABLED,
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                     await client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         Msg.message,
                         MessageType.text
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                 } catch (err) {
                     throw err;
                 }
@@ -76,14 +76,14 @@ module.exports = {
                     ) {
                         let switched = "OFF";
                         await Greetings.changeSettings(
-                            BotsApp.chatId,
+                            XA.chatId,
                             switched
                         );
                         client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             WELCOME.GREETINGS_UNENABLED,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
                         return;
                     }
                     if (
@@ -93,63 +93,63 @@ module.exports = {
                     ) {
                         let switched = "ON";
                         await Greetings.changeSettings(
-                            BotsApp.chatId,
+                            XA.chatId,
                             switched
                         );
                         client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             WELCOME.GREETINGS_ENABLED,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
 
                         return;
                     }
                     if (args[0] === "delete") {
                         var Msg: any = await Greetings.deleteMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             "welcome"
                         );
                         if (Msg === false || Msg === undefined) {
                             client.sendMessage(
-                                BotsApp.chatId,
+                                XA.chatId,
                                 WELCOME.SET_WELCOME_FIRST,
                                 MessageType.text
-                            ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                            ).catch(err => inputSanitization.handleError(err, client, XA));
                             return;
                         }
 
                         await client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             WELCOME.WELCOME_DELETED,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
 
                         return;
                     }
-                    let text = BotsApp.body.replace(
-                        BotsApp.body[0] + BotsApp.commandName + " ",
+                    let text = XA.body.replace(
+                        XA.body[0] + XA.commandName + " ",
                         ""
                     );
                     if (Msg === false || Msg === undefined) {
-                        await Greetings.setWelcome(BotsApp.chatId, text);
+                        await Greetings.setWelcome(XA.chatId, text);
                         await client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             WELCOME.WELCOME_UPDATED,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
 
                         return;
                     } else {
                         await Greetings.deleteMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             "welcome"
                         );
-                        await Greetings.setWelcome(BotsApp.chatId, text);
+                        await Greetings.setWelcome(XA.chatId, text);
                         await client.sendMessage(
-                            BotsApp.chatId,
+                            XA.chatId,
                             WELCOME.WELCOME_UPDATED,
                             MessageType.text
-                        ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                        ).catch(err => inputSanitization.handleError(err, client, XA));
 
                         return;
                     }
@@ -158,7 +158,7 @@ module.exports = {
                 }
             }
         } catch (err) {
-            inputSanitization.handleError(err, client, BotsApp);
+            inputSanitization.handleError(err, client, XA);
             return;
         }
     },

@@ -4,7 +4,7 @@ import inputSanitization from "../sidekick/input-sanitization";
 import CONFIG from "../config";
 import Client from "../sidekick/client";
 import { proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 import format from "string-format";
 import fs from 'fs';
@@ -15,40 +15,40 @@ module.exports = {
     description: ADD.DESCRIPTION,
     extendedDescription: ADD.EXTENDED_DESCRIPTION,
     demo: { isEnabled: false },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         try {
-            if (!BotsApp.isGroup) {
+            if (!XA.isGroup) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.general.NOT_A_GROUP,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
-            await client.getGroupMetaData(BotsApp.chatId, BotsApp);
-            if (!BotsApp.isBotGroupAdmin) {
+            await client.getGroupMetaData(XA.chatId, XA);
+            if (!XA.isBotGroupAdmin) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STRINGS.general.BOT_NOT_ADMIN,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             if (!args[0]) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     ADD.NO_ARG_ERROR,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             let number;
             if (parseInt(args[0]) === NaN || args[0][0] === "+" || args[0].length < 10) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     ADD.NUMBER_SYNTAX_ERROR,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             if (args[0].length == 10 && !(parseInt(args[0]) === NaN)) {
@@ -61,20 +61,20 @@ module.exports = {
             );
             if (!(exists)) {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     format(ADD.NOT_ON_WHATSAPP, number),
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
-            const response: any = await client.sock.groupParticipantsUpdate(BotsApp.chatId, [number + "@s.whatsapp.net"], 'add');
+            const response: any = await client.sock.groupParticipantsUpdate(XA.chatId, [number + "@s.whatsapp.net"], 'add');
 
             // if (response[number + "@c.us"] == 408) {
             //     client.sendMessage(
-            //         BotsApp.chatId,
+            //         XA.chatId,
             //         ADD.NO_24HR_BAN,
             //         MessageType.text
-            //     ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+            //     ).catch(err => inputSanitization.handleError(err, client, XA));
             //     return;
             // } else if (response[number + "@c.us"] == 403) {
             //     for (const index in response.participants) {
@@ -84,12 +84,12 @@ module.exports = {
             //         }
             //     }
             //     var invite = {
-            //         caption: "```Hi! You have been invited to join this WhatsApp group by BotsApp!```\n\n🔗https://mybotsapp.com",
-            //         groupJid: BotsApp.groupId,
-            //         groupName: BotsApp.groupName,
+            //         caption: "```Hi! You have been invited to join this WhatsApp group by XA!```\n\n🔗https://myXA.com",
+            //         groupJid: XA.groupId,
+            //         groupName: XA.groupName,
             //         inviteCode: code,
             //         inviteExpiration: tom,
-            //         jpegThumbnail: fs.readFileSync('./images/BotsApp_invite.jpeg')
+            //         jpegThumbnail: fs.readFileSync('./images/XA_invite.jpeg')
             //     }
             //     await client.sendMessage(
             //         number + "@s.whatsapp.net",
@@ -97,21 +97,21 @@ module.exports = {
             //         MessageType.groupInviteMessage
             //     );
             //     client.sendMessage(
-            //         BotsApp.chatId,
+            //         XA.chatId,
             //         ADD.PRIVACY,
             //         MessageType.text
-            //     ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+            //     ).catch(err => inputSanitization.handleError(err, client, XA));
             //     return;
             // } else if (response[number + "@c.us"] == 409) {
             //     client.sendMessage(
-            //         BotsApp.chatId,
+            //         XA.chatId,
             //         ADD.ALREADY_MEMBER,
             //         MessageType.text
-            //     ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+            //     ).catch(err => inputSanitization.handleError(err, client, XA));
             //     return;
             // }
             client.sendMessage(
-                BotsApp.chatId,
+                XA.chatId,
                 "```" + number + ADD.SUCCESS + "```",
                 MessageType.text
             );
@@ -120,11 +120,11 @@ module.exports = {
                 await inputSanitization.handleError(
                     err,
                     client,
-                    BotsApp,
+                    XA,
                     ADD.NOT_ON_WHATSAPP
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
             }
-            await inputSanitization.handleError(err, client, BotsApp);
+            await inputSanitization.handleError(err, client, XA);
         }
         return;
     },

@@ -4,7 +4,7 @@ import inputSanitization from "../sidekick/input-sanitization";
 import Strings from "../lib/db";
 import Client from "../sidekick/client";
 import { downloadContentFromMessage, proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 import { Transform } from "stream";
 import FormData from 'form-data';
@@ -17,13 +17,13 @@ module.exports = {
     description: STOV.DESCRIPTION,
     extendedDescription: STOV.EXTENDED_DESCRIPTION,
     demo: { isEnabled: false },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         // Task starts here
         try {
             // Function to convert media to sticker
             const convertToVideo = async (stickerId: string, replyChat: { message: proto.IStickerMessage; type: any; }) => {
                 var downloading = await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STOV.DOWNLOADING,
                     MessageType.text
                 );
@@ -35,16 +35,16 @@ module.exports = {
                 try {
                     let res = await webp2mp4File(fileName, videoPath);
                     await client.sendMessage(
-                        BotsApp.chatId,
+                        XA.chatId,
                         {url: res},
                         MessageType.video,
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
                 } catch (err) {
                     throw err;
                 }
             };
 
-            if (BotsApp.isReplySticker) {
+            if (XA.isReplySticker) {
                 var replyChatObject = {
                     message:
                         chat.message.extendedTextMessage.contextInfo
@@ -56,17 +56,17 @@ module.exports = {
                 convertToVideo(stickerId, replyChatObject);
             } else {
                 client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     STOV.TAG_A_VALID_STICKER_MESSAGE,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
             }
             return;
         } catch (err) {
             await inputSanitization.handleError(
                 err,
                 client,
-                BotsApp,
+                XA,
                 STOV.ERROR
             );
         }

@@ -4,7 +4,7 @@ import inputSanitization from "../sidekick/input-sanitization";
 import String from "../lib/db.js";
 import Client from "../sidekick/client";
 import { downloadContentFromMessage, proto } from "@adiwajshing/baileys";
-import BotsApp from "../sidekick/sidekick";
+import XA from "../sidekick/sidekick";
 import { MessageType } from "../sidekick/message-type";
 import { Transform } from "stream";
 const REPLY = String.setdp;
@@ -14,32 +14,32 @@ module.exports = {
     description: REPLY.DESCRIPTION,
     extendedDescription: REPLY.EXTENDED_DESCRIPTION,
     demo: { isEnabled: false },
-    async handle(client: Client, chat: proto.IWebMessageInfo, BotsApp: BotsApp, args: string[]): Promise<void> {
+    async handle(client: Client, chat: proto.IWebMessageInfo, XA: XA, args: string[]): Promise<void> {
         try {
-            if (!BotsApp.isGroup) {
+            if (!XA.isGroup) {
                 await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     REPLY.NOT_A_GROUP,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
-            if (!BotsApp.isImage && !BotsApp.isReplyImage) {
+            if (!XA.isImage && !XA.isReplyImage) {
                 await client.sendMessage(
-                    BotsApp.chatId,
+                    XA.chatId,
                     REPLY.NOT_AN_IMAGE,
                     MessageType.text
-                ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                ).catch(err => inputSanitization.handleError(err, client, XA));
                 return;
             }
             var update = await client.sendMessage(
-                BotsApp.chatId,
+                XA.chatId,
                 REPLY.ICON_CHANGED,
                 MessageType.text
             );
             var imageId = chat.key.id;
             const fileName = "./tmp/change_pic" + imageId;
-            if (BotsApp.isImage) {
+            if (XA.isImage) {
                 const stream: Transform = await downloadContentFromMessage(chat.message.imageMessage, 'image');
                 await inputSanitization.saveBuffer(fileName, stream);
             } else {
@@ -56,20 +56,20 @@ module.exports = {
                 .save(imagePath)
                 .on("end", async () => {
                     client.sock.updateProfilePicture(
-                        BotsApp.chatId,
+                        XA.chatId,
                         fs.readFileSync(imagePath)
-                    ).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    ).catch(err => inputSanitization.handleError(err, client, XA));
 
                     //Image and message deletion
                     inputSanitization.deleteFiles(fileName, imagePath);
-                    return await client.deleteMessage(BotsApp.chatId, {
+                    return await client.deleteMessage(XA.chatId, {
                         id: update.key.id,
-                        remoteJid: BotsApp.chatId,
+                        remoteJid: XA.chatId,
                         fromMe: true,
-                    }).catch(err => inputSanitization.handleError(err, client, BotsApp));
+                    }).catch(err => inputSanitization.handleError(err, client, XA));
                 });
         } catch (err) {
-            await inputSanitization.handleError(err, client, BotsApp);
+            await inputSanitization.handleError(err, client, XA);
         }
         return;
     },
