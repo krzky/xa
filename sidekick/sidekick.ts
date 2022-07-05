@@ -1,4 +1,4 @@
-import {GroupParticipant} from './node_modules/@adiwajshing/baileys'
+import {GroupParticipant} from '@adiwajshing/baileys'
 
 class XA {
 
